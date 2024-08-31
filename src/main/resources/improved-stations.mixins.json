@@ -4,9 +4,10 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinBlockEntityType",
+    "MixinCartographyTableContainer",
     "MixinCraftingTableContainer",
-    "MixinLoomContainer",
-    "MixinCartographyTableContainer"
+    "MixinJukeboxPlayable",
+    "MixinLoomContainer"
   ],
   "client": [
   ],
