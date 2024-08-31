@@ -58,7 +58,6 @@ public abstract class AbstactFurnaceSlabBlock extends AbstractFurnaceBlock imple
         }
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public FluidState getFluidState(BlockState state) {
         assert state != null;
@@ -71,7 +70,6 @@ public abstract class AbstactFurnaceSlabBlock extends AbstractFurnaceBlock imple
         builder.add(FACING, LIT, WATERLOGGED, TYPE);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public BlockState updateShape(BlockState state, Direction facing, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
@@ -80,16 +78,14 @@ public abstract class AbstactFurnaceSlabBlock extends AbstractFurnaceBlock imple
         return super.updateShape(state, facing, neighborState, world, pos, neighborPos);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
-    public boolean isPathfindable(BlockState world, BlockGetter view, BlockPos pos, PathComputationType env) {
+    public boolean isPathfindable(BlockState state, PathComputationType env) {
         if (env == PathComputationType.WATER) {
-            return view.getFluidState(pos).is(FluidTags.WATER);
+            return state.getFluidState().is(FluidTags.WATER);
         }
         return false;
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState blockState_1, BlockGetter blockView_1, BlockPos blockPos_1, CollisionContext entityContext_1) {
         SlabType slabType = blockState_1.getValue(TYPE);

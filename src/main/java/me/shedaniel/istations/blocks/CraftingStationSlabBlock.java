@@ -57,11 +57,10 @@ public class CraftingStationSlabBlock extends CraftingStationBlock {
         builder.add(FACING, WATERLOGGED, TYPE);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
-    public boolean isPathfindable(BlockState world, BlockGetter view, BlockPos pos, PathComputationType env) {
+    public boolean isPathfindable(BlockState state, PathComputationType env) {
         if (env == PathComputationType.WATER) {
-            return view.getFluidState(pos).is(FluidTags.WATER);
+            return state.getFluidState().is(FluidTags.WATER);
         }
         return false;
     }

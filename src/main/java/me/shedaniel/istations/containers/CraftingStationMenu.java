@@ -16,7 +16,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
@@ -34,7 +36,7 @@ public class CraftingStationMenu extends AbstractContainerMenu {
         super(ImprovedStations.CRAFTING_STATION_TYPE, syncId);
         this.resultInv = new ResultContainer();
         this.player = playerInventory.player;
-        this.craftingInventory = new CraftingContainer(this, 3, 3) {
+        this.craftingInventory = new TransientCraftingContainer(this, 3, 3) {
             @Override
             public int getContainerSize() {
                 return entity.getContainerSize();
@@ -114,19 +116,24 @@ public class CraftingStationMenu extends AbstractContainerMenu {
     
     @Override
     public void broadcastChanges() {
-        updateResult(this, player.level, player, craftingInventory, resultInv);
+        updateResult(this, player.level(), player, craftingInventory, resultInv);
         super.broadcastChanges();
     }
     
     protected void updateResult(AbstractContainerMenu menu, Level level, Player player, CraftingContainer craftingInventory, ResultContainer resultInventory) {
         if (!level.isClientSide) {
+            CraftingInput craftingInput = craftingInventory.asCraftInput();
             ServerPlayer serverPlayerEntity = (ServerPlayer) player;
             ItemStack itemStack = ItemStack.EMPTY;
-            Optional<CraftingRecipe> optional = Objects.requireNonNull(level.getServer()).getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftingInventory, level);
+            Optional<RecipeHolder<CraftingRecipe>> optional = Objects.requireNonNull(level.getServer()).getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftingInput, level);
             if (optional.isPresent()) {
-                CraftingRecipe craftingRecipe = optional.get();
-                if (resultInventory.setRecipeUsed(level, serverPlayerEntity, craftingRecipe)) {
-                    itemStack = craftingRecipe.assemble(craftingInventory);
+                RecipeHolder<CraftingRecipe> recipeHolder = optional.get();
+                CraftingRecipe craftingRecipe = recipeHolder.value();
+                if (resultInventory.setRecipeUsed(level, (ServerPlayer)player, recipeHolder)) {
+                    ItemStack itemStack2 = craftingRecipe.assemble(craftingInput, level.registryAccess());
+                    if (itemStack2.isItemEnabled(level.enabledFeatures())) {
+                        itemStack = itemStack2;
+                    }
                 }
             }
             
@@ -149,7 +156,7 @@ public class CraftingStationMenu extends AbstractContainerMenu {
     public void slotsChanged(Container inventory) {
         super.slotsChanged(inventory);
         broadcastChanges();
-        if (!player.level.isClientSide) {
+        if (!player.level().isClientSide) {
             entity.markDirty();
         }
     }

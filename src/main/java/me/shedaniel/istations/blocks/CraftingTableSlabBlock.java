@@ -57,7 +57,6 @@ public class CraftingTableSlabBlock extends CraftingTableBlock implements Simple
         }
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
@@ -68,7 +67,6 @@ public class CraftingTableSlabBlock extends CraftingTableBlock implements Simple
         builder.add(WATERLOGGED, TYPE);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public BlockState updateShape(BlockState state, Direction facing, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
@@ -77,16 +75,14 @@ public class CraftingTableSlabBlock extends CraftingTableBlock implements Simple
         return super.updateShape(state, facing, neighborState, world, pos, neighborPos);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
-    public boolean isPathfindable(BlockState world, BlockGetter view, BlockPos pos, PathComputationType env) {
+    public boolean isPathfindable(BlockState state, PathComputationType env) {
         if (env == PathComputationType.WATER) {
-            return view.getFluidState(pos).is(FluidTags.WATER);
+            return state.getFluidState().is(FluidTags.WATER);
         }
         return false;
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState blockState_1, BlockGetter blockView_1, BlockPos blockPos_1, CollisionContext entityContext_1) {
         SlabType slabType = blockState_1.getValue(TYPE);

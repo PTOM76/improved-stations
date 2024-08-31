@@ -5,13 +5,15 @@
 
 package me.shedaniel.istations.blocks;
 
+import com.mojang.serialization.MapCodec;
 import me.shedaniel.istations.ImprovedStations;
 import me.shedaniel.istations.blocks.entities.CraftingStationBlockEntity;
 import me.shedaniel.istations.containers.ExtendedScreenHandlerFactoryWrapped;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +28,6 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -54,7 +55,12 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
         super(settings);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
     }
-    
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(CraftingStationBlock::new);
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockPos blockPos = ctx.getClickedPos();
@@ -67,13 +73,11 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
         }
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
@@ -84,7 +88,6 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
         builder.add(FACING, WATERLOGGED);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
@@ -103,10 +106,9 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
             blockEntity.tick();
         });
     }
-    
-    @SuppressWarnings("deprecation")
+
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult blockHitResult) {
         if (!world.isClientSide) {
             player.openMenu(state.getMenuProvider(world, pos));
         }
@@ -116,20 +118,20 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
     @Override
     @Nullable
     public MenuProvider getMenuProvider(BlockState state, Level world, BlockPos pos) {
-        return new ExtendedScreenHandlerFactoryWrapped(super.getMenuProvider(state, world, pos), (player, buf) -> buf.writeBlockPos(pos));
+        return new ExtendedScreenHandlerFactoryWrapped(super.getMenuProvider(state, world, pos), (player) -> pos);
     }
     
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        if (itemStack.hasCustomHoverName()) {
+        if (itemStack.has(DataComponents.CUSTOM_NAME)) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CraftingStationBlockEntity) {
-                ((CraftingStationBlockEntity) blockEntity).setCustomName(itemStack.getHoverName());
+                DataComponentMap dataComponentMap = DataComponentMap.builder().set(DataComponents.CUSTOM_NAME, itemStack.get(DataComponents.CUSTOM_NAME)).build();
+                blockEntity.setComponents(dataComponentMap);
             }
         }
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public BlockState updateShape(BlockState state, Direction facing, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
@@ -139,7 +141,6 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
         return super.updateShape(state, facing, neighborState, world, pos, neighborPos);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
@@ -152,13 +153,11 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
         }
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
@@ -169,13 +168,11 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
         return RenderShape.MODEL;
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public boolean useShapeForLightOcclusion(BlockState blockState_1) {
         return true;
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState blockState_1, BlockGetter blockView_1, BlockPos blockPos_1, CollisionContext entityContext_1) {
         return SHAPE;

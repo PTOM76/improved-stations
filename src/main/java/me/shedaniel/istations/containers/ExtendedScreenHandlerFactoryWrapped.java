@@ -6,7 +6,6 @@
 package me.shedaniel.istations.containers;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -15,15 +14,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public record ExtendedScreenHandlerFactoryWrapped(
         MenuProvider factory,
-        BiConsumer<ServerPlayer, FriendlyByteBuf> dataWriter
+        Function<ServerPlayer, Object> dataWriter
 ) implements ExtendedScreenHandlerFactory {
     @Override
-    public void writeScreenOpeningData(ServerPlayer serverPlayerEntity, FriendlyByteBuf packetByteBuf) {
-        this.dataWriter.accept(serverPlayerEntity, packetByteBuf);
+    public Object getScreenOpeningData(ServerPlayer serverPlayerEntity) {
+        return dataWriter.apply(serverPlayerEntity);
     }
     
     @Override

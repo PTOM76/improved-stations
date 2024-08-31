@@ -6,19 +6,19 @@
 package me.shedaniel.istations.blocks.entities.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.shedaniel.istations.blocks.CraftingStationBlock;
 import me.shedaniel.istations.blocks.CraftingStationSlabBlock;
 import me.shedaniel.istations.blocks.entities.CraftingStationBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SlabBlock;
@@ -72,12 +72,12 @@ public class CraftingStationBlockEntityRenderer implements BlockEntityRenderer<C
                     }
                     if (!bakedModel.isGui3d()) {
                         matrices.translate(0, .55 / 16d, -.5d / 16d);
-                        matrices.mulPose(Vector3f.XP.rotationDegrees(90));
+                        matrices.mulPose(Axis.XP.rotationDegrees(90));
                         matrices.scale(.3f, .3f, .3f);
                     } else {
                         matrices.scale(.5f, .5f, .5f);
                     }
-                    Minecraft.getInstance().getItemRenderer().render(stack, ItemTransforms.TransformType.GROUND, false, matrices, vertexConsumers, lightAbove, OverlayTexture.NO_OVERLAY, bakedModel);
+                    Minecraft.getInstance().getItemRenderer().render(stack, ItemDisplayContext.GROUND, false, matrices, vertexConsumers, lightAbove, OverlayTexture.NO_OVERLAY, bakedModel);
                     matrices.popPose();
                 }
         } catch (Exception e) {

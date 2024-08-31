@@ -18,6 +18,7 @@ import net.minecraft.world.entity.player.StackedContents;
 import net.minecraft.world.item.ItemStack;
 
 public class ImprovedStationsREIContainerInfo implements REIServerPlugin {
+
     @Override
     public void registerMenuInfo(MenuInfoRegistry registry) {
         registry.register(BuiltinPlugin.CRAFTING, CraftingStationMenu.class, SimpleMenuInfoProvider.of(CraftingStationMenuInfo::new));

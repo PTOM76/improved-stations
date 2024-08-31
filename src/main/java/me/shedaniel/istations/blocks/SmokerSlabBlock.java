@@ -5,6 +5,7 @@
 
 package me.shedaniel.istations.blocks;
 
+import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
@@ -16,6 +17,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SmokerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,7 +27,12 @@ public class SmokerSlabBlock extends AbstactFurnaceSlabBlock {
     public SmokerSlabBlock(Properties settings) {
         super(settings);
     }
-    
+
+    @Override
+    protected MapCodec<? extends AbstractFurnaceBlock> codec() {
+        return simpleCodec(SmokerSlabBlock::new);
+    }
+
     @Override
     protected void openContainer(Level world, BlockPos pos, Player player) {
         BlockEntity blockEntity = world.getBlockEntity(pos);

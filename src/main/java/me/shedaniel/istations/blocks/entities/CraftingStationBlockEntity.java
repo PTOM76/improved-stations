@@ -8,6 +8,7 @@ package me.shedaniel.istations.blocks.entities;
 import me.shedaniel.istations.ImprovedStations;
 import me.shedaniel.istations.containers.CraftingStationMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -42,23 +43,33 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
     protected Component getDefaultName() {
         return Component.translatable("container.crafting");
     }
-    
+
+    @Override
+    protected NonNullList<ItemStack> getItems() {
+        return inventory;
+    }
+
+    @Override
+    protected void setItems(NonNullList<ItemStack> nonNullList) {
+        this.inventory = nonNullList;
+    }
+
     @Override
     protected AbstractContainerMenu createMenu(int syncId, Inventory playerInventory) {
         return new CraftingStationMenu(syncId, playerInventory, this, ContainerLevelAccess.NULL);
     }
-    
+
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
         this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, this.inventory);
+        ContainerHelper.loadAllItems(tag, this.inventory, provider);
     }
-    
+
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        ContainerHelper.saveAllItems(tag, this.inventory);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.saveAdditional(tag, provider);
+        ContainerHelper.saveAllItems(tag, this.inventory, provider);
     }
     
     public void tick() {
@@ -132,12 +143,12 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
             recipeFinder.accountSimpleStack(stack);
         }
     }
-    
+
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
+        return saveWithoutMetadata(provider);
     }
-    
+
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
