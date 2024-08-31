@@ -5,11 +5,13 @@
 
 package me.shedaniel.istations.blocks;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,7 +39,12 @@ public class CraftingStationSlabBlock extends CraftingStationBlock {
         super(settings);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, Boolean.FALSE));
     }
-    
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return simpleCodec(CraftingStationSlabBlock::new);
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockPos blockPos = ctx.getClickedPos();

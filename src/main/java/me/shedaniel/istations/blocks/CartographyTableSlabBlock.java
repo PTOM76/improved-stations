@@ -5,6 +5,7 @@
 
 package me.shedaniel.istations.blocks;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
@@ -42,7 +43,12 @@ public class CartographyTableSlabBlock extends CartographyTableBlock implements 
         super(settings);
         this.registerDefaultState(this.stateDefinition.any().setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, Boolean.FALSE));
     }
-    
+
+    @Override
+    public MapCodec<CartographyTableBlock> codec() {
+        return simpleCodec(CartographyTableSlabBlock::new);
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockPos blockPos = ctx.getClickedPos();

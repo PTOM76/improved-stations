@@ -5,6 +5,7 @@
 
 package me.shedaniel.istations.blocks;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
@@ -32,7 +33,12 @@ public class LoomSlabBlock extends LoomBlock implements SimpleWaterloggedBlock {
     public static final EnumProperty<SlabType> TYPE = SlabBlock.TYPE;
     protected static final VoxelShape BOTTOM_SHAPE;
     protected static final VoxelShape TOP_SHAPE;
-    
+
+    @Override
+    public MapCodec<LoomBlock> codec() {
+        return simpleCodec(LoomSlabBlock::new);
+    }
+
     static {
         BOTTOM_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
         TOP_SHAPE = Block.box(0.0D, 8.0D, 0.0D, 16.0D, 16.0D, 16.0D);
