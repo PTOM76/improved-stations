@@ -19,9 +19,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SmokerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
+import org.jetbrains.annotations.Nullable;
 
 public class SmokerSlabBlock extends AbstactFurnaceSlabBlock {
     public SmokerSlabBlock(Properties settings) {
@@ -33,6 +36,11 @@ public class SmokerSlabBlock extends AbstactFurnaceSlabBlock {
     @Override
     protected MapCodec<? extends AbstractFurnaceBlock> codec() {
         return CODEC;
+    }
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return createFurnaceTicker(level, blockEntityType, BlockEntityType.SMOKER);
     }
 
     @Override
