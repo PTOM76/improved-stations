@@ -1,5 +1,5 @@
 /*
- * Improved Stations by shedaniel, Pitan76
+ * Improved Stations by shedaniel.
  * Licensed under the MIT.
  */
 
