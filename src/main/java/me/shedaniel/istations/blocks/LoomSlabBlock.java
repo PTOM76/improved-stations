@@ -34,9 +34,11 @@ public class LoomSlabBlock extends LoomBlock implements SimpleWaterloggedBlock {
     protected static final VoxelShape BOTTOM_SHAPE;
     protected static final VoxelShape TOP_SHAPE;
 
+    public static final MapCodec<LoomBlock> CODEC = simpleCodec(LoomSlabBlock::new);
+
     @Override
     public MapCodec<LoomBlock> codec() {
-        return simpleCodec(LoomSlabBlock::new);
+        return CODEC;
     }
 
     static {

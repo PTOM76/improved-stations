@@ -44,9 +44,11 @@ public class CraftingTableSlabBlock extends CraftingTableBlock implements Simple
         this.registerDefaultState(this.stateDefinition.any().setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, Boolean.FALSE));
     }
 
+    public static final MapCodec<CraftingTableSlabBlock> CODEC = simpleCodec(CraftingTableSlabBlock::new);
+
     @Override
     public MapCodec<? extends CraftingTableBlock> codec() {
-        return simpleCodec(CraftingTableSlabBlock::new);
+        return CODEC;
     }
 
     @Override

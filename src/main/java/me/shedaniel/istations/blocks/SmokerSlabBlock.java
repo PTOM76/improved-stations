@@ -28,9 +28,11 @@ public class SmokerSlabBlock extends AbstactFurnaceSlabBlock {
         super(settings);
     }
 
+    public static final MapCodec<SmokerSlabBlock> CODEC = simpleCodec(SmokerSlabBlock::new);
+
     @Override
     protected MapCodec<? extends AbstractFurnaceBlock> codec() {
-        return simpleCodec(SmokerSlabBlock::new);
+        return CODEC;
     }
 
     @Override

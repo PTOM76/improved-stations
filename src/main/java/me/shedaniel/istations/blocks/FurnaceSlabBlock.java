@@ -29,9 +29,11 @@ public class FurnaceSlabBlock extends AbstactFurnaceSlabBlock {
         super(settings);
     }
 
+    public static final MapCodec<FurnaceSlabBlock> CODEC = simpleCodec(FurnaceSlabBlock::new);
+
     @Override
     protected MapCodec<? extends AbstractFurnaceBlock> codec() {
-        return simpleCodec(FurnaceSlabBlock::new);
+        return CODEC;
     }
 
     @Override

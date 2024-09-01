@@ -44,9 +44,11 @@ public class CartographyTableSlabBlock extends CartographyTableBlock implements 
         this.registerDefaultState(this.stateDefinition.any().setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, Boolean.FALSE));
     }
 
+    public static final MapCodec<CartographyTableBlock> CODEC = simpleCodec(CartographyTableSlabBlock::new);
+
     @Override
     public MapCodec<CartographyTableBlock> codec() {
-        return simpleCodec(CartographyTableSlabBlock::new);
+        return CODEC;
     }
 
     @Override

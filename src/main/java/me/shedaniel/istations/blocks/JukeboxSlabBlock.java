@@ -34,9 +34,11 @@ public class JukeboxSlabBlock extends JukeboxBlock implements SimpleWaterloggedB
     protected static final VoxelShape BOTTOM_SHAPE;
     protected static final VoxelShape TOP_SHAPE;
 
+    public static final MapCodec<JukeboxBlock> CODEC = simpleCodec(JukeboxSlabBlock::new);
+
     @Override
     public MapCodec<JukeboxBlock> codec() {
-        return simpleCodec(JukeboxSlabBlock::new);
+        return CODEC;
     }
 
     static {

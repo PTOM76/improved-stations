@@ -56,9 +56,11 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
     }
 
+    public static final MapCodec<CraftingStationBlock> CODEC = simpleCodec(CraftingStationBlock::new);
+
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(CraftingStationBlock::new);
+        return CODEC;
     }
 
     @Override

@@ -29,9 +29,11 @@ public class BlastFurnaceSlabBlock extends AbstactFurnaceSlabBlock {
         super(settings);
     }
 
+    public static final MapCodec<BlastFurnaceSlabBlock> CODEC = simpleCodec(BlastFurnaceSlabBlock::new);
+
     @Override
     protected MapCodec<? extends AbstractFurnaceBlock> codec() {
-        return simpleCodec(BlastFurnaceSlabBlock::new);
+        return CODEC;
     }
 
     @Override

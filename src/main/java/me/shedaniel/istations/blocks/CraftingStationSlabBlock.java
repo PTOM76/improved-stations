@@ -40,9 +40,11 @@ public class CraftingStationSlabBlock extends CraftingStationBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, Boolean.FALSE));
     }
 
+    public static final MapCodec<CraftingStationSlabBlock> CODEC = simpleCodec(CraftingStationSlabBlock::new);
+
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(CraftingStationSlabBlock::new);
+        return CODEC;
     }
 
     @Override
