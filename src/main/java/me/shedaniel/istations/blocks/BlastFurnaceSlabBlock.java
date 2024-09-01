@@ -18,14 +18,23 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
 public class BlastFurnaceSlabBlock extends AbstactFurnaceSlabBlock {
+
     public BlastFurnaceSlabBlock(Properties settings) {
         super(settings);
+    }
+
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
+        return createFurnaceTicker(level, blockEntityType, BlockEntityType.BLAST_FURNACE);
     }
     
     @Override
