@@ -5,13 +5,11 @@
 
 package me.shedaniel.istations.blocks;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,20 +27,15 @@ public class CraftingStationSlabBlock extends CraftingStationBlock {
     public static final EnumProperty<SlabType> TYPE = SlabBlock.TYPE;
     protected static final VoxelShape BOTTOM_SHAPE;
     protected static final VoxelShape TOP_SHAPE;
-    
+
     static {
         BOTTOM_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
         TOP_SHAPE = Block.box(0.0D, 8.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     }
-    
+
     public CraftingStationSlabBlock(Properties settings) {
         super(settings);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, Boolean.FALSE));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(CraftingStationSlabBlock::new);
     }
 
     @Override
@@ -58,20 +51,21 @@ public class CraftingStationSlabBlock extends CraftingStationBlock {
             return direction != Direction.DOWN && (direction == Direction.UP || ctx.getClickLocation().y - (double) blockPos.getY() <= 0.5D) ? blockState2 : blockState2.setValue(TYPE, SlabType.TOP);
         }
     }
-    
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, WATERLOGGED, TYPE);
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean isPathfindable(BlockState state, PathComputationType env) {
+    public boolean isPathfindable(BlockState world, BlockGetter view, BlockPos pos, PathComputationType env) {
         if (env == PathComputationType.WATER) {
-            return state.getFluidState().is(FluidTags.WATER);
+            return view.getFluidState(pos).is(FluidTags.WATER);
         }
         return false;
     }
-    
+
     @Override
     public VoxelShape getShape(BlockState blockState_1, BlockGetter blockView_1, BlockPos blockPos_1, CollisionContext entityContext_1) {
         SlabType slabType = blockState_1.getValue(TYPE);

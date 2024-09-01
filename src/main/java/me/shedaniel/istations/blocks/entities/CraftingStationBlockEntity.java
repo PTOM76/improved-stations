@@ -8,7 +8,6 @@ package me.shedaniel.istations.blocks.entities;
 import me.shedaniel.istations.ImprovedStations;
 import me.shedaniel.istations.containers.CraftingStationMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,25 +32,15 @@ import java.util.Objects;
 public class CraftingStationBlockEntity extends BaseContainerBlockEntity implements StackedContentsCompatible {
     protected NonNullList<ItemStack> inventory;
     private boolean dirty = false;
-    
+
     public CraftingStationBlockEntity(BlockPos blockPos, BlockState blockState) {
         super(ImprovedStations.CRAFTING_STATION_BLOCK_ENTITY, blockPos, blockState);
         this.inventory = NonNullList.withSize(9, ItemStack.EMPTY);
     }
-    
+
     @Override
     protected Component getDefaultName() {
         return Component.translatable("container.crafting");
-    }
-
-    @Override
-    protected NonNullList<ItemStack> getItems() {
-        return inventory;
-    }
-
-    @Override
-    protected void setItems(NonNullList<ItemStack> nonNullList) {
-        this.inventory = nonNullList;
     }
 
     @Override
@@ -60,18 +49,18 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag, provider);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, this.inventory, provider);
+        ContainerHelper.loadAllItems(tag, this.inventory);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        ContainerHelper.saveAllItems(tag, this.inventory, provider);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        ContainerHelper.saveAllItems(tag, this.inventory);
     }
-    
+
     public void tick() {
         if (hasLevel() && !getLevel().isClientSide) {
             if (dirty) {
@@ -81,16 +70,16 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
             }
         }
     }
-    
+
     public void markDirty() {
         this.dirty = true;
     }
-    
+
     @Override
     public int getContainerSize() {
         return this.inventory.size();
     }
-    
+
     @Override
     public boolean isEmpty() {
         for (ItemStack itemStack : this.inventory) {
@@ -99,22 +88,22 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
         }
         return true;
     }
-    
+
     @Override
     public ItemStack getItem(int slot) {
         return this.inventory.get(slot);
     }
-    
+
     @Override
     public ItemStack removeItem(int slot, int amount) {
         return ContainerHelper.removeItem(this.inventory, slot, amount);
     }
-    
+
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
         return ContainerHelper.takeItem(this.inventory, slot);
     }
-    
+
     @Override
     public void setItem(int slot, ItemStack stack) {
         this.inventory.set(slot, stack);
@@ -122,7 +111,7 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
             stack.setCount(this.getMaxStackSize());
         }
     }
-    
+
     @Override
     public boolean stillValid(Player player) {
         if (Objects.requireNonNull(this.level).getBlockEntity(this.worldPosition) != this) {
@@ -131,12 +120,12 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
             return player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) <= 64.0D;
         }
     }
-    
+
     @Override
     public void clearContent() {
         this.inventory.clear();
     }
-    
+
     @Override
     public void fillStackedContents(StackedContents recipeFinder) {
         for (ItemStack stack : inventory) {
@@ -145,8 +134,8 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        return saveWithoutMetadata(provider);
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
     }
 
     @Nullable

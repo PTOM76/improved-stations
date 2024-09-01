@@ -30,11 +30,6 @@ public class BlastFurnaceSlabBlock extends AbstactFurnaceSlabBlock {
     }
 
     @Override
-    protected MapCodec<? extends AbstractFurnaceBlock> codec() {
-        return simpleCodec(BlastFurnaceSlabBlock::new);
-    }
-
-    @Override
     protected void openContainer(Level world, BlockPos pos, Player player) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BlastFurnaceBlockEntity) {

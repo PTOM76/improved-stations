@@ -28,12 +28,6 @@ public class FurnaceSlabBlock extends AbstactFurnaceSlabBlock {
     public FurnaceSlabBlock(Properties settings) {
         super(settings);
     }
-
-    @Override
-    protected MapCodec<? extends AbstractFurnaceBlock> codec() {
-        return simpleCodec(FurnaceSlabBlock::new);
-    }
-
     @Override
     protected void openContainer(Level world, BlockPos pos, Player player) {
         BlockEntity blockEntity = world.getBlockEntity(pos);

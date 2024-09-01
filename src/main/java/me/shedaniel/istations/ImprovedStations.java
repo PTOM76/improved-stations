@@ -10,7 +10,10 @@ import me.shedaniel.istations.blocks.entities.CraftingStationBlockEntity;
 import me.shedaniel.istations.containers.CraftingStationMenu;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,30 +26,32 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public class ImprovedStations implements ModInitializer {
-    public static final ResourceLocation CRAFTING_STATION_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "crafting_station");
-    public static final ResourceLocation CRAFTING_STATION_SLAB_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "crafting_station_slab");
-    public static final ResourceLocation FURNACE_SLAB_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "furnace_slab");
-    public static final ResourceLocation SMOKER_SLAB_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "smoker_slab");
-    public static final ResourceLocation BLAST_FURNACE_SLAB_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "blast_furnace_slab");
-    public static final ResourceLocation CRAFTING_TABLE_SLAB_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "crafting_table_slab");
-    public static final ResourceLocation JUKEBOX_SLAB_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "jukebox_slab");
-    public static final ResourceLocation LOOM_SLAB_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "loom_slab");
-    public static final ResourceLocation CARTOGRAPHY_TABLE_SLAB_ID = ResourceLocation.fromNamespaceAndPath("improved-stations", "cartography_table_slab");
-    public static final Block CRAFTING_STATION = new CraftingStationBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE).noOcclusion());
-    public static final Block CRAFTING_STATION_SLAB = new CraftingStationSlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE).noOcclusion());
-    public static final Block FURNACE_SLAB = new FurnaceSlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.FURNACE).noOcclusion());
-    public static final Block SMOKER_SLAB = new SmokerSlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SMOKER).noOcclusion());
-    public static final Block BLAST_FURNACE_SLAB = new BlastFurnaceSlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.BLAST_FURNACE).noOcclusion());
-    public static final Block CRAFTING_TABLE_SLAB = new CraftingTableSlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CRAFTING_TABLE).noOcclusion());
-    public static final Block JUKEBOX_SLAB = new JukeboxSlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.JUKEBOX).noOcclusion());
-    public static final Block LOOM_SLAB = new LoomSlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.LOOM).noOcclusion());
-    public static final Block CARTOGRAPHY_TABLE_SLAB = new CartographyTableSlabBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE).noOcclusion());
-    public static final BlockEntityType<CraftingStationBlockEntity> CRAFTING_STATION_BLOCK_ENTITY = BlockEntityType.Builder.of(CraftingStationBlockEntity::new, CRAFTING_STATION, CRAFTING_STATION_SLAB).build(null);
-    public static final MenuType<CraftingStationMenu> CRAFTING_STATION_TYPE = new ExtendedScreenHandlerType<>((syncId, playerInventory, pos) -> new CraftingStationMenu(syncId, playerInventory, (CraftingStationBlockEntity) playerInventory.player.level().getBlockEntity(pos), ContainerLevelAccess.create(playerInventory.player.level(), pos)), BlockPos.STREAM_CODEC);
-    
+    public static final ResourceLocation CRAFTING_STATION_ID = new ResourceLocation("improved-stations", "crafting_station");
+    public static final ResourceLocation CRAFTING_STATION_SLAB_ID = new ResourceLocation("improved-stations", "crafting_station_slab");
+    public static final ResourceLocation FURNACE_SLAB_ID = new ResourceLocation("improved-stations", "furnace_slab");
+    public static final ResourceLocation SMOKER_SLAB_ID = new ResourceLocation("improved-stations", "smoker_slab");
+    public static final ResourceLocation BLAST_FURNACE_SLAB_ID = new ResourceLocation("improved-stations", "blast_furnace_slab");
+    public static final ResourceLocation CRAFTING_TABLE_SLAB_ID = new ResourceLocation("improved-stations", "crafting_table_slab");
+    public static final ResourceLocation JUKEBOX_SLAB_ID = new ResourceLocation("improved-stations", "jukebox_slab");
+    public static final ResourceLocation LOOM_SLAB_ID = new ResourceLocation("improved-stations", "loom_slab");
+    public static final ResourceLocation CARTOGRAPHY_TABLE_SLAB_ID = new ResourceLocation("improved-stations", "cartography_table_slab");
+    public static final Block CRAFTING_STATION = new CraftingStationBlock(FabricBlockSettings.copy(Blocks.CRAFTING_TABLE).noOcclusion());
+    public static final Block CRAFTING_STATION_SLAB = new CraftingStationSlabBlock(FabricBlockSettings.copy(Blocks.CRAFTING_TABLE).noOcclusion());
+    public static final Block FURNACE_SLAB = new FurnaceSlabBlock(FabricBlockSettings.copy(Blocks.FURNACE).noOcclusion());
+    public static final Block SMOKER_SLAB = new SmokerSlabBlock(FabricBlockSettings.copy(Blocks.SMOKER).noOcclusion());
+    public static final Block BLAST_FURNACE_SLAB = new BlastFurnaceSlabBlock(FabricBlockSettings.copy(Blocks.BLAST_FURNACE).noOcclusion());
+    public static final Block CRAFTING_TABLE_SLAB = new CraftingTableSlabBlock(FabricBlockSettings.copy(Blocks.CRAFTING_TABLE).noOcclusion());
+    public static final Block JUKEBOX_SLAB = new JukeboxSlabBlock(FabricBlockSettings.copy(Blocks.JUKEBOX).noOcclusion());
+    public static final Block LOOM_SLAB = new LoomSlabBlock(FabricBlockSettings.copy(Blocks.LOOM).noOcclusion());
+    public static final Block CARTOGRAPHY_TABLE_SLAB = new CartographyTableSlabBlock(FabricBlockSettings.copy(Blocks.CARTOGRAPHY_TABLE).noOcclusion());
+    public static final BlockEntityType<CraftingStationBlockEntity> CRAFTING_STATION_BLOCK_ENTITY = FabricBlockEntityTypeBuilder.create(CraftingStationBlockEntity::new, CRAFTING_STATION, CRAFTING_STATION_SLAB).build(null);
+    public static final MenuType<CraftingStationMenu> CRAFTING_STATION_TYPE = new ExtendedScreenHandlerType<>((syncId, playerInventory, buf) -> {
+        BlockPos pos = buf.readBlockPos();
+        return new CraftingStationMenu(syncId, playerInventory, (CraftingStationBlockEntity) playerInventory.player.level().getBlockEntity(pos), ContainerLevelAccess.create(playerInventory.player.level(), pos));
+    });
+
     @Override
     public void onInitialize() {
         registerBlock(CRAFTING_STATION_ID, CRAFTING_STATION);

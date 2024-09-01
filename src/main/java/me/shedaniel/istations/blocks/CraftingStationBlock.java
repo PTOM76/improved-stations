@@ -5,15 +5,13 @@
 
 package me.shedaniel.istations.blocks;
 
-import com.mojang.serialization.MapCodec;
 import me.shedaniel.istations.ImprovedStations;
 import me.shedaniel.istations.blocks.entities.CraftingStationBlockEntity;
 import me.shedaniel.istations.containers.ExtendedScreenHandlerFactoryWrapped;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,21 +42,16 @@ import org.jetbrains.annotations.Nullable;
 public class CraftingStationBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
-    
+
     private static final VoxelShape SHAPE;
-    
+
     static {
         SHAPE = Shapes.or(Block.box(0, 12, 0, 16, 16, 16), Block.box(0, 0, 0, 4, 12, 4), Block.box(0, 0, 12, 4, 12, 16), Block.box(12, 0, 12, 16, 12, 16), Block.box(12, 0, 0, 16, 12, 4));
     }
-    
+
     public CraftingStationBlock(Properties settings) {
         super(settings);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec(CraftingStationBlock::new);
     }
 
     @Override
@@ -72,33 +65,36 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
             return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite()).setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
         }
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
-    
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, WATERLOGGED);
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
-    
+
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CraftingStationBlockEntity(pos, state);
     }
-    
+
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> blockEntityType) {
@@ -107,40 +103,42 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
         });
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult blockHitResult) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!world.isClientSide) {
             player.openMenu(state.getMenuProvider(world, pos));
         }
         return InteractionResult.SUCCESS;
     }
-    
+
     @Override
     @Nullable
     public MenuProvider getMenuProvider(BlockState state, Level world, BlockPos pos) {
-        return new ExtendedScreenHandlerFactoryWrapped(super.getMenuProvider(state, world, pos), (player) -> pos);
+        return new ExtendedScreenHandlerFactoryWrapped(super.getMenuProvider(state, world, pos), (player, buf) -> buf.writeBlockPos(pos));
     }
-    
+
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        if (itemStack.has(DataComponents.CUSTOM_NAME)) {
+        if (itemStack.hasCustomHoverName()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CraftingStationBlockEntity) {
-                DataComponentMap dataComponentMap = DataComponentMap.builder().set(DataComponents.CUSTOM_NAME, itemStack.get(DataComponents.CUSTOM_NAME)).build();
-                blockEntity.setComponents(dataComponentMap);
+                ((CraftingStationBlockEntity) blockEntity).setCustomName(itemStack.getHoverName());
             }
         }
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public BlockState updateShape(BlockState state, Direction facing, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
-        
+
         return super.updateShape(state, facing, neighborState, world, pos, neighborPos);
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
@@ -152,27 +150,31 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
             super.onRemove(state, world, pos, newState, moved);
         }
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
     }
-    
+
     @Override
     public RenderShape getRenderShape(BlockState blockState_1) {
         return RenderShape.MODEL;
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public boolean useShapeForLightOcclusion(BlockState blockState_1) {
         return true;
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState blockState_1, BlockGetter blockView_1, BlockPos blockPos_1, CollisionContext entityContext_1) {
         return SHAPE;

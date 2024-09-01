@@ -6,8 +6,8 @@
     "MixinBlockEntityType",
     "MixinCartographyTableContainer",
     "MixinCraftingTableContainer",
-    "MixinJukeboxPlayable",
-    "MixinLoomContainer"
+    "MixinLoomContainer",
+    "MixinRecordItem"
   ],
   "client": [
   ],

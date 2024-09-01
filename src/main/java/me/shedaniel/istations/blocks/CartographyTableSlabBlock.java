@@ -5,7 +5,6 @@
 
 package me.shedaniel.istations.blocks;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
@@ -33,20 +32,15 @@ public class CartographyTableSlabBlock extends CartographyTableBlock implements 
     public static final EnumProperty<SlabType> TYPE = SlabBlock.TYPE;
     protected static final VoxelShape BOTTOM_SHAPE;
     protected static final VoxelShape TOP_SHAPE;
-    
+
     static {
         BOTTOM_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
         TOP_SHAPE = Block.box(0.0D, 8.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     }
-    
+
     public CartographyTableSlabBlock(Properties settings) {
         super(settings);
         this.registerDefaultState(this.stateDefinition.any().setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, Boolean.FALSE));
-    }
-
-    @Override
-    public MapCodec<CartographyTableBlock> codec() {
-        return simpleCodec(CartographyTableSlabBlock::new);
     }
 
     @Override
@@ -62,17 +56,19 @@ public class CartographyTableSlabBlock extends CartographyTableBlock implements 
             return direction != Direction.DOWN && (direction == Direction.UP || ctx.getClickLocation().y - (double) blockPos.getY() <= 0.5D) ? blockState2 : blockState2.setValue(TYPE, SlabType.TOP);
         }
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
-    
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED, TYPE);
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public BlockState updateShape(BlockState state, Direction facing, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
@@ -80,15 +76,17 @@ public class CartographyTableSlabBlock extends CartographyTableBlock implements 
         }
         return super.updateShape(state, facing, neighborState, world, pos, neighborPos);
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean isPathfindable(BlockState state, PathComputationType env) {
+    public boolean isPathfindable(BlockState world, BlockGetter view, BlockPos pos, PathComputationType env) {
         if (env == PathComputationType.WATER) {
-            return state.getFluidState().is(FluidTags.WATER);
+            return view.getFluidState(pos).is(FluidTags.WATER);
         }
         return false;
     }
-    
+
+    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getShape(BlockState blockState_1, BlockGetter blockView_1, BlockPos blockPos_1, CollisionContext entityContext_1) {
         SlabType slabType = blockState_1.getValue(TYPE);
