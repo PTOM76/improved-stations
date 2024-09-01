@@ -21,16 +21,18 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 
-public class CraftingStationMenu extends AbstractContainerMenu {
+public class CraftingStationMenu extends RecipeBookMenu<CraftingInput, CraftingRecipe> {
     private final ResultContainer resultInv;
     private final ContainerLevelAccess access;
     private final CraftingStationBlockEntity entity;
     private final CraftingContainer craftingInventory;
     private final Player player;
+    private boolean placingRecipe;
     
     public CraftingStationMenu(int syncId, Inventory playerInventory, CraftingStationBlockEntity entity, ContainerLevelAccess access) {
         super(ImprovedStations.CRAFTING_STATION_TYPE, syncId);
@@ -65,7 +67,12 @@ public class CraftingStationMenu extends AbstractContainerMenu {
                 }
                 return stack;
             }
-            
+
+            @Override
+            public List<ItemStack> getItems() {
+                return entity.getItems();
+            }
+
             @Override
             public void setItem(int slot, ItemStack stack) {
                 entity.setItem(slot, stack);
@@ -113,33 +120,64 @@ public class CraftingStationMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(playerInventory, m, 8 + m * 18, 142));
         }
     }
-    
+
+    @Override
+    public void beginPlacingRecipe() {
+        this.placingRecipe = true;
+    }
+
+    @Override
+    public void finishPlacingRecipe(RecipeHolder<CraftingRecipe> recipeHolder) {
+        this.placingRecipe = false;
+        this.access.execute((level, blockPos) -> {
+            updateResult(this, level, this.player, this.craftingInventory, this.resultInv, recipeHolder);
+        });
+    }
+
+    @Override
+    public void fillCraftSlotsStackedContents(StackedContents stackedContents) {
+        this.craftingInventory.fillStackedContents(stackedContents);
+    }
+
+    @Override
+    public void clearCraftingContent() {
+        this.craftingInventory.clearContent();
+        this.resultInv.clearContent();
+    }
+
+    @Override
+    public boolean recipeMatches(RecipeHolder<CraftingRecipe> recipeHolder) {
+        return (recipeHolder.value()).matches(this.craftingInventory.asCraftInput(), this.player.level());
+    }
+
     @Override
     public void broadcastChanges() {
-        updateResult(this, player.level(), player, craftingInventory, resultInv);
+        if (!this.placingRecipe) {
+            updateResult(this, player.level(), player, craftingInventory, resultInv, null);
+        }
         super.broadcastChanges();
     }
-    
-    protected void updateResult(AbstractContainerMenu menu, Level level, Player player, CraftingContainer craftingInventory, ResultContainer resultInventory) {
+
+    protected static void updateResult(AbstractContainerMenu menu, Level level, Player player, CraftingContainer craftingInventory, ResultContainer resultInventory, @Nullable RecipeHolder<CraftingRecipe> recipeHolder) {
         if (!level.isClientSide) {
             CraftingInput craftingInput = craftingInventory.asCraftInput();
-            ServerPlayer serverPlayerEntity = (ServerPlayer) player;
+            ServerPlayer serverPlayer = (ServerPlayer)player;
             ItemStack itemStack = ItemStack.EMPTY;
-            Optional<RecipeHolder<CraftingRecipe>> optional = Objects.requireNonNull(level.getServer()).getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftingInput, level);
+            Optional<RecipeHolder<CraftingRecipe>> optional = level.getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftingInput, level, recipeHolder);
             if (optional.isPresent()) {
-                RecipeHolder<CraftingRecipe> recipeHolder = optional.get();
-                CraftingRecipe craftingRecipe = recipeHolder.value();
-                if (resultInventory.setRecipeUsed(level, (ServerPlayer)player, recipeHolder)) {
+                RecipeHolder<CraftingRecipe> recipeHolder2 = optional.get();
+                CraftingRecipe craftingRecipe = recipeHolder2.value();
+                if (resultInventory.setRecipeUsed(level, serverPlayer, recipeHolder2)) {
                     ItemStack itemStack2 = craftingRecipe.assemble(craftingInput, level.registryAccess());
                     if (itemStack2.isItemEnabled(level.enabledFeatures())) {
                         itemStack = itemStack2;
                     }
                 }
             }
-            
+
             resultInventory.setItem(0, itemStack);
             menu.setRemoteSlot(0, itemStack);
-            serverPlayerEntity.connection.send(new ClientboundContainerSetSlotPacket(menu.containerId, menu.incrementStateId(), 0, itemStack));
+            serverPlayer.connection.send(new ClientboundContainerSetSlotPacket(menu.containerId, menu.incrementStateId(), 0, itemStack));
         }
     }
     
@@ -147,15 +185,15 @@ public class CraftingStationMenu extends AbstractContainerMenu {
         this.craftingInventory.fillStackedContents(recipeFinder);
     }
     
-    public void clearCraftingSlots() {
-        this.craftingInventory.clearContent();
-        this.resultInv.clearContent();
-    }
-    
     @Override
     public void slotsChanged(Container inventory) {
         super.slotsChanged(inventory);
-        broadcastChanges();
+        if (!this.placingRecipe) {
+            this.access.execute((level, blockPos) -> {
+                updateResult(this, level, this.player, this.craftingInventory, this.resultInv, null);
+            });
+        }
+
         if (!player.level().isClientSide) {
             entity.markDirty();
         }
@@ -163,7 +201,8 @@ public class CraftingStationMenu extends AbstractContainerMenu {
     
     @Override
     public boolean stillValid(Player player) {
-        return this.access.evaluate((world, blockPos) -> world.getBlockState(blockPos).getBlock() instanceof CraftingStationBlock && player.distanceToSqr(blockPos.getX() + .5D, blockPos.getY() + .5D, blockPos.getZ() + .5D) < 64D, true);
+        return this.access.evaluate((world, blockPos) -> world.getBlockState(blockPos).getBlock() instanceof CraftingStationBlock && player.canInteractWithBlock(blockPos, 4.0), true);
+        //return this.access.evaluate((world, blockPos) -> world.getBlockState(blockPos).getBlock() instanceof CraftingStationBlock && player.distanceToSqr(blockPos.getX() + .5D, blockPos.getY() + .5D, blockPos.getZ() + .5D) < 64D, true);
     }
     
     @Override
@@ -218,5 +257,35 @@ public class CraftingStationMenu extends AbstractContainerMenu {
     @Override
     public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
         return slot.container != this.resultInv && super.canTakeItemForPickAll(stack, slot);
+    }
+
+    @Override
+    public int getResultSlotIndex() {
+        return 0;
+    }
+
+    @Override
+    public int getGridWidth() {
+        return this.craftingInventory.getWidth();
+    }
+
+    @Override
+    public int getGridHeight() {
+        return this.craftingInventory.getHeight();
+    }
+
+    @Override
+    public int getSize() {
+        return 10;
+    }
+
+    @Override
+    public RecipeBookType getRecipeBookType() {
+        return RecipeBookType.CRAFTING;
+    }
+
+    @Override
+    public boolean shouldMoveToInventory(int i) {
+        return i != this.getResultSlotIndex();
     }
 }

@@ -45,12 +45,12 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
     }
 
     @Override
-    protected NonNullList<ItemStack> getItems() {
+    public NonNullList<ItemStack> getItems() {
         return inventory;
     }
 
     @Override
-    protected void setItems(NonNullList<ItemStack> nonNullList) {
+    public void setItems(NonNullList<ItemStack> nonNullList) {
         this.inventory = nonNullList;
     }
 
