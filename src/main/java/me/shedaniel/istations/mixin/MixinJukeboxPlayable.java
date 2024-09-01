@@ -1,3 +1,8 @@
+/*
+ * Improved Stations by shedaniel, Pitan76
+ * Licensed under the MIT.
+ */
+
 package me.shedaniel.istations.mixin;
 
 import me.shedaniel.istations.ImprovedStations;
