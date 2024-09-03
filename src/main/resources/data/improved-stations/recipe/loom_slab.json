@@ -2,11 +2,11 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "minecraft:smoker"
+      "item": "minecraft:loom"
     }
   ],
   "result": {
-    "item": "improved-stations:smoker_slab",
+    "id": "improved-stations:loom_slab",
     "count": 2
   }
 }

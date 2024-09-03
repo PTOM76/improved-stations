@@ -2,11 +2,11 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "minecraft:blast_furnace"
+      "item": "minecraft:furnace"
     }
   ],
   "result": {
-    "item": "improved-stations:blast_furnace_slab",
+    "id": "improved-stations:furnace_slab",
     "count": 2
   }
 }
