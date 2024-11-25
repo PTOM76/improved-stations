@@ -1,9 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:smoker"
-    }
+    "minecraft:smoker"
   ],
   "result": {
     "id": "improved-stations:smoker_slab",

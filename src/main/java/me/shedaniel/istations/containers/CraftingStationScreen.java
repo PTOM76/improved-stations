@@ -8,6 +8,7 @@ package me.shedaniel.istations.containers;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,6 +34,6 @@ public class CraftingStationScreen extends AbstractContainerScreen<CraftingStati
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = this.leftPos;
         int j = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(BG_TEX, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(RenderType::guiTextured, BG_TEX, i, j, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 }

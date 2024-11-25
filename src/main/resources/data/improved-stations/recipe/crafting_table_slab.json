@@ -4,9 +4,7 @@
     "###"
   ],
   "key": {
-    "#": {
-      "item": "minecraft:crafting_table"
-    }
+    "#": "minecraft:crafting_table"
   },
   "result": {
     "id": "improved-stations:crafting_table_slab",

@@ -1,9 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:cartography_table"
-    }
+    "minecraft:cartography_table"
   ],
   "result": {
     "id": "improved-stations:cartography_table_slab",

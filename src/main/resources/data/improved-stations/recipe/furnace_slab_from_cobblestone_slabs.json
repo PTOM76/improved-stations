@@ -6,9 +6,7 @@
     "___"
   ],
   "key": {
-    "_": {
-      "item": "minecraft:cobblestone_slab"
-    }
+    "_": "minecraft:cobblestone_slab"
   },
   "result": {
     "id": "improved-stations:furnace_slab",

@@ -20,6 +20,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.entity.player.StackedItemContents;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.StackedContentsCompatible;
@@ -138,7 +139,7 @@ public class CraftingStationBlockEntity extends BaseContainerBlockEntity impleme
     }
     
     @Override
-    public void fillStackedContents(StackedContents recipeFinder) {
+    public void fillStackedContents(StackedItemContents recipeFinder) {
         for (ItemStack stack : inventory) {
             recipeFinder.accountSimpleStack(stack);
         }

@@ -1,9 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "improved-stations:crafting_station"
-    }
+    "improved-stations:crafting_station"
   ],
   "result": {
     "id": "improved-stations:crafting_station_slab",

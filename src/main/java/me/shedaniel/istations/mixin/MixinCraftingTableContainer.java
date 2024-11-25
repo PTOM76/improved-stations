@@ -7,10 +7,7 @@ package me.shedaniel.istations.mixin;
 
 import me.shedaniel.istations.ImprovedStations;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.CraftingMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.RecipeBookMenu;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import org.spongepowered.asm.mixin.Final;
@@ -21,11 +18,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(CraftingMenu.class)
-public abstract class MixinCraftingTableContainer extends RecipeBookMenu<CraftingInput, CraftingRecipe> {
+public abstract class MixinCraftingTableContainer extends AbstractCraftingMenu {
     @Shadow @Final private ContainerLevelAccess access;
     
-    public MixinCraftingTableContainer(MenuType<?> containerType, int i) {
-        super(containerType, i);
+    public MixinCraftingTableContainer(MenuType<?> containerType, int i, int j, int k) {
+        super(containerType, i, j, k);
     }
     
     @Inject(method = "stillValid", at = @At("RETURN"), cancellable = true)

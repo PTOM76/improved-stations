@@ -9,7 +9,7 @@ import me.shedaniel.istations.ImprovedStations;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxPlayable;
@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinJukeboxPlayable {
 
     @Inject(method = "tryInsertIntoJukebox", at = @At("RETURN"), cancellable = true)
-    private static void tryInsertIntoJukebox(Level level, BlockPos blockPos, ItemStack itemStack, Player player, CallbackInfoReturnable<ItemInteractionResult> cir) {
+    private static void tryInsertIntoJukebox(Level level, BlockPos blockPos, ItemStack itemStack, Player player, CallbackInfoReturnable<InteractionResult> cir) {
         JukeboxPlayable jukeboxPlayable = itemStack.get(DataComponents.JUKEBOX_PLAYABLE);
         if (jukeboxPlayable != null) {
             BlockState blockState = level.getBlockState(blockPos);
@@ -45,7 +45,7 @@ public class MixinJukeboxPlayable {
                     player.awardStat(Stats.PLAY_RECORD);
                 }
 
-                cir.setReturnValue(ItemInteractionResult.sidedSuccess(level.isClientSide));
+                cir.setReturnValue(InteractionResult.SUCCESS);
             }
         }
     }
