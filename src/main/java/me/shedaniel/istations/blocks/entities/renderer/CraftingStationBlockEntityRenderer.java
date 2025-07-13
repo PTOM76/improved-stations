@@ -10,14 +10,23 @@ import com.mojang.math.Axis;
 import me.shedaniel.istations.blocks.CraftingStationBlock;
 import me.shedaniel.istations.blocks.CraftingStationSlabBlock;
 import me.shedaniel.istations.blocks.entities.CraftingStationBlockEntity;
+import me.shedaniel.istations.mixin.MixinBlockModelWrapper;
+import me.shedaniel.istations.mixin.MixinSpecialModelWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.item.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -63,21 +72,33 @@ public class CraftingStationBlockEntityRenderer implements BlockEntityRenderer<C
                     ItemStack stack = blockEntity.getItem(slotId);
                     if (stack.isEmpty())
                         continue;
-                    BakedModel bakedModel = Minecraft.getInstance().getItemRenderer().getModel(stack, null, null, 0);
+
+                    ResourceLocation resourceLocation = stack.get(DataComponents.ITEM_MODEL);
+                    ItemModel itemModel = Minecraft.getInstance().getModelManager().getItemModel(resourceLocation);
+
                     matrices.pushPose();
                     if (slabType == SlabType.BOTTOM) {
                         matrices.translate(5 / 16d + (newX + 1) * 3 / 16d, .5d - .5 / 16d, 5 / 16d + (newY + 1) * 3 / 16d);
                     } else {
                         matrices.translate(5 / 16d + (newX + 1) * 3 / 16d, 1d - .5 / 16d, 5 / 16d + (newY + 1) * 3 / 16d);
                     }
-                    if (!bakedModel.isGui3d()) {
+                    if (!(itemModel instanceof BlockModelWrapper && ((MixinBlockModelWrapper) itemModel).getModel().isGui3d()) && !(itemModel instanceof CompositeModel) && !(itemModel instanceof SpecialModelWrapper<?> && ((MixinSpecialModelWrapper) itemModel).getBaseModel().isGui3d())) {
                         matrices.translate(0, .55 / 16d, -.5d / 16d);
                         matrices.mulPose(Axis.XP.rotationDegrees(90));
                         matrices.scale(.3f, .3f, .3f);
                     } else {
                         matrices.scale(.5f, .5f, .5f);
                     }
-                    Minecraft.getInstance().getItemRenderer().render(stack, ItemDisplayContext.GROUND, false, matrices, vertexConsumers, lightAbove, OverlayTexture.NO_OVERLAY, bakedModel);
+                    Minecraft.getInstance().getItemRenderer().renderStatic(
+                            stack,
+                            ItemDisplayContext.GROUND,
+                            lightAbove,
+                            OverlayTexture.NO_OVERLAY,
+                            matrices,
+                            vertexConsumers,
+                            blockEntity.getLevel(),
+                            slotId
+                    );
                     matrices.popPose();
                 }
         } catch (Exception e) {

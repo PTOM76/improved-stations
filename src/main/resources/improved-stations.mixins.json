@@ -10,6 +10,8 @@
     "MixinLoomContainer"
   ],
   "client": [
+    "MixinBlockModelWrapper",
+    "MixinSpecialModelWrapper"
   ],
   "injectors": {
     "defaultRequire": 1
