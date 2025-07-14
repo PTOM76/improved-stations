@@ -11,6 +11,8 @@
   ],
   "client": [
     "MixinBlockModelWrapper",
+    "MixinCompositeModel",
+    "MixinConditionalItemModel",
     "MixinSpecialModelWrapper"
   ],
   "injectors": {

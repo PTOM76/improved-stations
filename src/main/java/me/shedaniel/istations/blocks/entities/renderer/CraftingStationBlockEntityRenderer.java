@@ -11,21 +11,18 @@ import me.shedaniel.istations.blocks.CraftingStationBlock;
 import me.shedaniel.istations.blocks.CraftingStationSlabBlock;
 import me.shedaniel.istations.blocks.entities.CraftingStationBlockEntity;
 import me.shedaniel.istations.mixin.MixinBlockModelWrapper;
+import me.shedaniel.istations.mixin.MixinCompositeModel;
+import me.shedaniel.istations.mixin.MixinConditionalItemModel;
 import me.shedaniel.istations.mixin.MixinSpecialModelWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.item.*;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -33,15 +30,16 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
 
 public class CraftingStationBlockEntityRenderer implements BlockEntityRenderer<CraftingStationBlockEntity> {
     public CraftingStationBlockEntityRenderer(BlockEntityRendererProvider.Context dispatcher) {
     }
-    
+
     @Override
-    public void render(CraftingStationBlockEntity blockEntity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+    public void render(CraftingStationBlockEntity blockEntity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, Vec3 vec3) {
         try {
             int lightAbove = LevelRenderer.getLightColor(Objects.requireNonNull(blockEntity.getLevel()), blockEntity.getBlockPos().above());
             BlockState state = blockEntity.getBlockState();
@@ -82,7 +80,10 @@ public class CraftingStationBlockEntityRenderer implements BlockEntityRenderer<C
                     } else {
                         matrices.translate(5 / 16d + (newX + 1) * 3 / 16d, 1d - .5 / 16d, 5 / 16d + (newY + 1) * 3 / 16d);
                     }
-                    if (!(itemModel instanceof BlockModelWrapper && ((MixinBlockModelWrapper) itemModel).getModel().isGui3d()) && !(itemModel instanceof CompositeModel) && !(itemModel instanceof SpecialModelWrapper<?> && ((MixinSpecialModelWrapper) itemModel).getBaseModel().isGui3d())) {
+
+                    //System.out.println("Rendering item " + "," + ((MixinBlockModelWrapper) itemModel).getQuads().size());
+
+                    if (!is3dGui(itemModel)) {
                         matrices.translate(0, .55 / 16d, -.5d / 16d);
                         matrices.mulPose(Axis.XP.rotationDegrees(90));
                         matrices.scale(.3f, .3f, .3f);
@@ -104,5 +105,18 @@ public class CraftingStationBlockEntityRenderer implements BlockEntityRenderer<C
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean is3dGui(ItemModel model) {
+        if (model instanceof BlockModelWrapper) return ((MixinBlockModelWrapper) model).getProperties().usesBlockLight();
+        if (model instanceof SpecialModelWrapper) return ((MixinSpecialModelWrapper) model).getProperties().usesBlockLight();
+        if (model instanceof CompositeModel) {
+            for (ItemModel subModel : ((MixinCompositeModel) model).getModels()) {
+                if (is3dGui(subModel)) return true;
+            }
+        }
+        if (model instanceof ConditionalItemModel) return is3dGui(((MixinConditionalItemModel) model).getOnFalse());
+
+        return false;
     }
 }

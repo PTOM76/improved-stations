@@ -239,7 +239,7 @@ public class CraftingStationMenu extends RecipeBookMenu {
             itemStack = itemStack2.copy();
             if (invSlot == 0) {
                 this.access.execute((world, blockPos) -> {
-                    itemStack2.getItem().onCraftedBy(itemStack2, world, player);
+                    itemStack2.getItem().onCraftedBy(itemStack2, player);
                 });
                 if (!this.moveItemStackTo(itemStack2, 10, 46, true)) {
                     return ItemStack.EMPTY;

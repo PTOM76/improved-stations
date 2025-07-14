@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
@@ -34,6 +35,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -143,17 +145,23 @@ public class CraftingStationBlock extends BaseEntityBlock implements SimpleWater
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+    protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @Nullable Orientation orientation, boolean bl) {
+        BlockState newState = world.getBlockState(pos);
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof CraftingStationBlockEntity) {
                 Containers.dropContents(world, pos, (CraftingStationBlockEntity) blockEntity);
                 world.updateNeighbourForOutputSignal(pos, this);
             }
-            super.onRemove(state, world, pos, newState, moved);
+            super.neighborChanged(state, world, pos, block, orientation, bl);
         }
     }
-    
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, boolean bl) {
+        super.affectNeighborsAfterRemoval(blockState, serverLevel, blockPos, bl);
+    }
+
     @Override
     public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
